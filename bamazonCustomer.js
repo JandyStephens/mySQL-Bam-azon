@@ -30,6 +30,7 @@ function chooseItem() {
   ) {
     // if (err) throw err;
     console.table(products);
+
     inquirer
       .prompt([
         {
@@ -42,14 +43,14 @@ function chooseItem() {
         }
       ])
       .then(function(answers) {
-        console.log("answers:", answers);
+        console.log("User answers:", answers);
         // console.log(products);
         // console.log(products.stock_quantity);S
         var selectedItem = connection.query(
           "SELECT stock_quantity FROM bamazondb.products WHERE item_id = ?",
           [answers.productId],
           function(req, res) {
-            console.log("response:", res[0].stock_quantity);
+            console.log("Currently in stock:", res[0].stock_quantity);
             // console.log(req);
 
             // for (let i = 0; i < products.length; i++) {
@@ -57,8 +58,12 @@ function chooseItem() {
             //   selectedItem = products[i];
             // console.log(selectedItem);
             // if (err) throw err;
-            if (answers.quantity > res[0].stock_quantity) {
-              console.log("Insufficient Quantity");
+            if (res[0].stock_quantity === 0) {
+              console.log("We are currently out of res[0].product_name");
+            } else if (answers.quantity > res[0].stock_quantity) {
+              console.log(
+                "Insufficient Quantity. Please enter another amount."
+              );
             } else {
             }
           }
