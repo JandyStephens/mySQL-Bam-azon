@@ -28,35 +28,54 @@ function chooseItem() {
     err,
     products
   ) {
+    // if (err) throw err;
     console.table(products);
-  });
-
-  inquirer
-    .prompt([
-      {
-        name: "product id",
-        message: "Please enter the ID of the item you wish to purchase:"
-      },
-      {
-        name: "quantity",
-        message: "How many would you like to purhase?"
-      }
-    ])
-    .then(function(answers) {
-      console.log(answers);
-      var query = connection.query(
-        "INSERT INTO auctions SET ?",
+    inquirer
+      .prompt([
         {
-          name: answers.tacocat,
-          category: answers.category,
-          price: parseFloat(postAnswers.price)
+          name: "productId",
+          message: "Please enter the ID of the item you wish to purchase:"
         },
-        function(err, res) {
-          if (err) throw err;
-          console.log("You have purchased " + answers.quantity + "!");
-          // Call updateProduct AFTER the INSERT completes
-          askUserQuestions();
+        {
+          name: "quantity",
+          message: "How many would you like to purhase?"
         }
-      );
-    });
+      ])
+      .then(function(answers) {
+        console.log("answers:", answers);
+        // console.log(products);
+        // console.log(products.stock_quantity);S
+        var selectedItem = connection.query(
+          "SELECT stock_quantity FROM bamazondb.products WHERE item_id = ?",
+          [answers.productId],
+          function(req, res) {
+            console.log("response:", res[0].stock_quantity);
+            // console.log(req);
+
+            // for (let i = 0; i < products.length; i++) {
+            // if (parseInt(answers.productId) === products[i].item_id) {
+            //   selectedItem = products[i];
+            // console.log(selectedItem);
+            // if (err) throw err;
+            if (answers.quantity > res[0].stock_quantity) {
+              console.log("Insufficient Quantity");
+            } else {
+            }
+          }
+          // }
+          // }
+        );
+      });
+  });
 }
+//       }
+//  ,
+//       function(err, res) {
+//         if (err) throw err;
+//         console.log("You have purchased " + answers.quantity + "!");
+//         // Call updateProduct AFTER the INSERT completes
+//         askUserQuestions();
+//       }
+//     );
+//   });
+// }
