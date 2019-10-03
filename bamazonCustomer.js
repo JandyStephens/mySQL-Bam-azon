@@ -43,14 +43,14 @@ function chooseItem() {
           }
         ])
         .then(function(answers) {
-          console.log("User answers:", answers);
+          // console.log("User answers:", answers);
           // console.log(products);
           // console.log(products.stock_quantity);S
           var selectedItem = connection.query(
             "SELECT * FROM bamazondb.products WHERE item_id = ?",
             [answers.productId],
             function(req, res) {
-              console.log("Currently in stock:", res[0].stock_quantity);
+              // console.log("Currently in stock:", res[0].stock_quantity);
               // console.table(res);
 
               // for (let i = 0; i < products.length; i++) {
@@ -69,7 +69,7 @@ function chooseItem() {
                 );
                 askQuestions();
               } else {
-                reduceStock(answers, res[0].product_name);
+                reduceStock(answers, res);
                 // console.log(res[0].product_name);
                 // chooseItem();
               }
@@ -94,13 +94,15 @@ function chooseItem() {
 //   });
 // }
 
-function reduceStock(answers, productName) {
+function reduceStock(answers, res) {
   connection.query(
     "UPDATE products SET stock_quantity= stock_quantity - ? WHERE item_id = ?",
     [answers.quantity, answers.productId],
     function(err, products) {
+      var totalCost = res[0].price * answers.quantity;
+      // console.log(totalCost);
       console.log(
-        `Success! You have purchased ${answers.quantity} ${productName}. Your total comes to (${res[0].price}*${answers.quantity}).`
+        `Success! You have purchased ${answers.quantity} ${res[0].product_name}. Your total comes to ${totalCost} dollars.`
       );
     }
   );
