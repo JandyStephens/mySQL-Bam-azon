@@ -107,6 +107,7 @@ function reduceStock(answers, res) {
       console.log(
         `Success! You have purchased ${answers.quantity} ${res[0].product_name}. Your total comes to ${totalCost} dollars.`
       );
+      process.exit();
     }
   );
   // console.log(answers.quantity);
