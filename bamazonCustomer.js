@@ -30,7 +30,7 @@ function chooseItem() {
   ) {
     // if (err) throw err;
     console.table(products);
-
+    function askQuestions() {}
     inquirer
       .prompt([
         {
@@ -62,7 +62,7 @@ function chooseItem() {
               console.log("We are currently out of res[0].product_name");
             } else if (answers.quantity > res[0].stock_quantity) {
               console.log(
-                "Insufficient Quantity. Please enter another amount."
+                "Insufficient quantity in stock. Please enter another amount."
               );
             } else {
             }
