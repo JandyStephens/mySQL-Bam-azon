@@ -30,47 +30,56 @@ function chooseItem() {
   ) {
     // if (err) throw err;
     console.table(products);
-    function askQuestions() {}
-    inquirer
-      .prompt([
-        {
-          name: "productId",
-          message: "Please enter the ID of the item you wish to purchase:"
-        },
-        {
-          name: "quantity",
-          message: "How many would you like to purhase?"
-        }
-      ])
-      .then(function(answers) {
-        console.log("User answers:", answers);
-        // console.log(products);
-        // console.log(products.stock_quantity);S
-        var selectedItem = connection.query(
-          "SELECT stock_quantity FROM bamazondb.products WHERE item_id = ?",
-          [answers.productId],
-          function(req, res) {
-            console.log("Currently in stock:", res[0].stock_quantity);
-            // console.log(req);
-
-            // for (let i = 0; i < products.length; i++) {
-            // if (parseInt(answers.productId) === products[i].item_id) {
-            //   selectedItem = products[i];
-            // console.log(selectedItem);
-            // if (err) throw err;
-            if (res[0].stock_quantity === 0) {
-              console.log("We are currently out of res[0].product_name");
-            } else if (answers.quantity > res[0].stock_quantity) {
-              console.log(
-                "Insufficient quantity in stock. Please enter another amount."
-              );
-            } else {
-            }
+    function askQuestions() {
+      return inquirer
+        .prompt([
+          {
+            name: "productId",
+            message: "Please enter the ID of the item you wish to purchase:"
+          },
+          {
+            name: "quantity",
+            message: "How many would you like to purchase?"
           }
-          // }
-          // }
-        );
-      });
+        ])
+        .then(function(answers) {
+          console.log("User answers:", answers);
+          // console.log(products);
+          // console.log(products.stock_quantity);S
+          var selectedItem = connection.query(
+            "SELECT * FROM bamazondb.products WHERE item_id = ?",
+            [answers.productId],
+            function(req, res) {
+              console.log("Currently in stock:", res[0].stock_quantity);
+              // console.table(res);
+
+              // for (let i = 0; i < products.length; i++) {
+              // if (parseInt(answers.productId) === products[i].item_id) {
+              //   selectedItem = products[i];
+              // console.log(selectedItem);
+              // if (err) throw err;
+              if (res[0].stock_quantity === 0) {
+                console.log(
+                  `We are currently out of ${res[0].product_name}. Please choose another item.`
+                );
+                askQuestions();
+              } else if (answers.quantity > res[0].stock_quantity) {
+                console.log(
+                  "Insufficient quantity in stock. Please enter another amount."
+                );
+                askQuestions();
+              } else {
+                reduceStock(answers, res[0].product_name);
+                // console.log(res[0].product_name);
+                // chooseItem();
+              }
+            }
+            // }
+            // }
+          );
+        });
+    }
+    askQuestions();
   });
 }
 //       }
@@ -84,3 +93,17 @@ function chooseItem() {
 //     );
 //   });
 // }
+
+function reduceStock(answers, productName) {
+  connection.query(
+    "UPDATE products SET stock_quantity= stock_quantity - ? WHERE item_id = ?",
+    [answers.quantity, answers.productId],
+    function(err, products) {
+      console.log(
+        `Success! You have purchased ${answers.quantity} ${productName}. Your total comes to (${res[0].price}*${answers.quantity}).`
+      );
+    }
+  );
+  // console.log(answers.quantity);
+  // console.log(answers.productId);
+}
