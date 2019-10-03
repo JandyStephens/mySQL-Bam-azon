@@ -58,7 +58,10 @@ function chooseItem() {
               //   selectedItem = products[i];
               // console.log(selectedItem);
               // if (err) throw err;
-              if (res[0].stock_quantity === 0) {
+              if (res.length === 0 || answers.quantity == false) {
+                console.log("Please enter an item ID and quantity to start");
+                askQuestions();
+              } else if (res[0].stock_quantity === 0) {
                 console.log(
                   `We are currently out of ${res[0].product_name}. Please choose another item.`
                 );
